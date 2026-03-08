@@ -20,7 +20,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-sqlx-testcontainers = { git = "https://github.com/your-username/sqlx-testcontainers" }
+sqlx-testcontainers = { git = "https://github.com/anthonysuper/sqlx-testcontainers" }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio-rustls", "migrate"] }
 tokio = { version = "1", features = ["full"] }
 ```
@@ -38,7 +38,7 @@ async fn test_basic_query(mut conn: sqlx::postgres::PgConnection) {
         .fetch_one(&mut conn)
         .await
         .expect("Failed to execute query");
-        
+
     assert_eq!(row.0, 2);
 }
 
@@ -48,7 +48,7 @@ async fn test_with_specific_version(mut conn: sqlx::postgres::PgConnection) {
         .fetch_one(&mut conn)
         .await
         .expect("Failed to execute query");
-        
+
     assert!(row.0.contains("PostgreSQL 15"));
 }
 
