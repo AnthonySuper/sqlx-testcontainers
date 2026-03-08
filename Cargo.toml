@@ -3,6 +3,11 @@ name = "sqlx-testcontainers"
 description = "use testcontainers to isolate sqlx tests"
 readme = "README.md"
 publish = true
+version.workspace = true
+license.workspace = true
+authors.workspace = true
+edition.workspace = true
+repository.workspace = true
 
 [dependencies]
 sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio-rustls", "migrate"] }
