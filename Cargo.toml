@@ -2,6 +2,7 @@
 name = "sqlx-testcontainers"
 description = "use testcontainers to isolate sqlx tests"
 readme = "README.md"
+publish = true
 
 [dependencies]
 sqlx = { version = "0.8.3", features = ["postgres", "runtime-tokio-rustls", "migrate"] }
@@ -19,4 +20,3 @@ edition = "2024"
 license = "MIT"
 repository = "https://github.com/AnthonySuper/sqlx-testcontainers"
 authors = ["Anthony Super <anthony@noided.media>"]
-publish = true
