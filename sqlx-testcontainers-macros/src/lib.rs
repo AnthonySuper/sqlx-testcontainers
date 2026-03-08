@@ -4,30 +4,31 @@ use syn::{parse::{Parse, ParseStream}, parse_macro_input, ItemFn, LitStr, Token,
 
 struct MacroArgs {
     tag: Option<String>,
+    migrations: Option<String>,
 }
 
 impl Parse for MacroArgs {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        if input.is_empty() {
-            return Ok(MacroArgs { tag: None });
+        let mut tag = None;
+        let mut migrations = None;
+
+        while !input.is_empty() {
+            let ident: Ident = input.parse()?;
+            input.parse::<Token![=]>()?;
+            let value: LitStr = input.parse()?;
+
+            match ident.to_string().as_str() {
+                "tag" => tag = Some(value.value()),
+                "migrations" => migrations = Some(value.value()),
+                _ => return Err(syn::Error::new(ident.span(), "expected `tag` or `migrations`")),
+            }
+
+            if !input.is_empty() {
+                input.parse::<Token![,]>()?;
+            }
         }
 
-        let lookahead = input.lookahead1();
-        if lookahead.peek(Ident) {
-            let name: Ident = input.parse()?;
-            if name == "tag" {
-                input.parse::<Token![=]>()?;
-                let tag_lit: LitStr = input.parse()?;
-                Ok(MacroArgs { tag: Some(tag_lit.value()) })
-            } else {
-                Err(syn::Error::new(name.span(), "expected `tag`"))
-            }
-        } else if lookahead.peek(LitStr) {
-            let tag_lit: LitStr = input.parse()?;
-            Ok(MacroArgs { tag: Some(tag_lit.value()) })
-        } else {
-            Err(lookahead.error())
-        }
+        Ok(MacroArgs { tag, migrations })
     }
 }
 
@@ -46,6 +47,12 @@ pub fn test(args: TokenStream, input: TokenStream) -> TokenStream {
         quote! { Some(#t.to_string()) }
     } else {
         quote! { None }
+    };
+
+    let migrate_expr = if let Some(m) = args.migrations {
+        quote! { ::sqlx::migrate!(#m).run(&pool).await.expect("Failed to run migrations"); }
+    } else {
+        quote! { ::sqlx::migrate!().run(&pool).await.expect("Failed to run migrations"); }
     };
 
     let expanded = quote! {
@@ -74,7 +81,7 @@ pub fn test(args: TokenStream, input: TokenStream) -> TokenStream {
                 .await
                 .expect("Failed to connect to postgres");
             
-            ::sqlx::migrate!().run(&pool).await.expect("Failed to run migrations");
+            #migrate_expr
             
             let mut conn = pool.acquire().await.expect("Failed to acquire connection").detach();
             
