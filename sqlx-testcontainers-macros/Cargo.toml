@@ -1,11 +1,11 @@
 [package]
 name = "sqlx-testcontainers-macros"
-version = "0.1.0"
-edition = "2024"
-license = "MIT"
-description = "use testcontainers to isolate sqlx tests"
-readme = "README.md"
-homepage = "https://github.com/AnthonySuper/sqlx-testcontainers"
+description = "macro support for SQLx-testcontainers. Not intended to be used directly."
+version.workspace = true
+license.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
 
 [lib]
 proc-macro = true
