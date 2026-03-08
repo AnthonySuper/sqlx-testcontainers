@@ -1,5 +1,3 @@
-use sqlx::Row;
-
 #[sqlx_testcontainers::test]
 async fn test_basic(mut conn: sqlx::postgres::PgConnection) {
     let row: (i32,) = sqlx::query_as("SELECT 1 + 1")
@@ -18,9 +16,9 @@ async fn test_with_tag(mut conn: sqlx::postgres::PgConnection) {
     assert!(row.0.contains("PostgreSQL 14"));
 }
 
-#[sqlx_testcontainers::test(migrations = "migrations")]
+#[sqlx_testcontainers::test(migrations = "./migrations")]
 async fn test_with_migrations_path(mut conn: sqlx::postgres::PgConnection) {
-    let row: (i32,) = sqlx::query_as("SELECT count(*) FROM test")
+    let row: (i64,) = sqlx::query_as("SELECT count(*) FROM test")
         .fetch_one(&mut conn)
         .await
         .expect("Failed to execute query");
